@@ -9,34 +9,37 @@ import string
 class Files:
 
     def __init__ (self, files, screen):
+        self.all = files
         self.files = files
         self.screen = screen
         self.ysize, self.xsize = screen.getmaxyx()
-        ypad = len (files) +1 # sometimes crashes without the +1, reason unclear yet
+        ypad = len (files) +1
         if ypad<self.ysize-1:
             ypad = self.ysize-1
         self.candidates = curses.newpad (ypad, self.xsize)
         self.candidates.bkgdset (' ', curses.color_pair (2))
         self.index = 0
-        self.size = len (self.files)
         self.pattern = None
         self.offset = 0
         self._update()
 
     def filter_ (self, pattern):
-        files = [f for f in self.files if pattern in f]
+        file_ = self.files[self.index]
+        self.files = [f for f in self.all if pattern in f]
+        index = [ i for i, f in enumerate (self.files) if f==file_]
+        if len (index)==0:
+            if self.index>=len (self.files):
+                self.index = len (self.files)-1
+        else:
+            self.index = index[0]
         self._update (pattern)
         self.pattern = pattern
 
     def _update (self, pattern=None):
-        if pattern is None:
-            files = self.files
-        else:
-            files = [f for f in self.files if pattern in f]
-        self.size = len (files)
+        self.size = len (self.files)
         self.candidates.clear()
         y = 0
-        for f in files:
+        for f in self.files:
             string = f.ljust (self.xsize)
             color_index = 2
             if y==self.index:
@@ -60,13 +63,7 @@ class Files:
             self._update (self.pattern)
 
     def get (self):
-        if self.pattern is None:
-            files = self.files
-        else:
-            files = [f for f in self.files if self.pattern in f]
-        if self.index>=len (files):
-            return None
-        return files[self.index]
+        return self.files[self.index]
 
 
 def select (screen, files):
