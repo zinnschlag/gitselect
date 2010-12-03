@@ -101,9 +101,11 @@ def list_files():
     return out.splitlines()
 
 def execute (file_, command):
-    command = command.replace ("%", file_)
     if file_ is not None:
+        command = command.replace ("%", file_)
         p = subprocess.Popen (command, shell=True)
+    else:
+        sys.exit (1)
 
 CONFIG_PATH = "~/.gitselect"
 
