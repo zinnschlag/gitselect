@@ -12,7 +12,7 @@ class Files:
         self.files = files
         self.screen = screen
         self.ysize, self.xsize = screen.getmaxyx()
-        ypad = len (files) +1 # XXX
+        ypad = len (files) +1 # sometimes crashes without the +1, reason unclear yet
         if ypad<self.ysize-1:
             ypad = self.ysize-1
         self.candidates = curses.newpad (ypad, self.xsize)
@@ -95,4 +95,6 @@ if __name__ == "__main__":
         print err
         sys.exit (1)
     files = out.splitlines()
-    print curses.wrapper (select, files)
+    file_ = curses.wrapper (select, files)
+    if file_ is not None:
+        subprocess.call (["gedit", "--new-window", file_])
