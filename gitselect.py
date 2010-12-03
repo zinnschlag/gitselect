@@ -79,24 +79,30 @@ def select (screen, files):
         c = screen.getch()
         if c==27: # ESC
             return None
-        if c==curses.KEY_UP:
+        elif c==curses.KEY_UP:
             candidates.up()
-        if c==curses.KEY_DOWN:
+        elif c==curses.KEY_DOWN:
             candidates.down()
-        if c==10: # return
+        elif c==10: # return
             return candidates.get()
         text.do_command (c)
         candidates.filter_ (string.strip (text.gather()))
         pattern.refresh()
 
-if __name__ == "__main__":
+def list_files():
     p = subprocess.Popen ("git ls-files", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         shell=True)
     out, err = p.communicate()
     if len (err)!=0:
         print err
         sys.exit (1)
-    files = out.splitlines()
-    file_ = curses.wrapper (select, files)
+    return out.splitlines()
+
+def execute (file_):
     if file_ is not None:
         subprocess.call (["gedit", "--new-window", file_])
+
+if __name__ == "__main__":
+    files = list_files()
+    file_ = curses.wrapper (select, files)
+    execute (file_)
