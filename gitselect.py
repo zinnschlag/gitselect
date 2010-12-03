@@ -20,6 +20,7 @@ class Files:
         self.index = 0
         self.size = len (self.files)
         self.pattern = None
+        self.offset = 0
         self._update()
 
     def filter_ (self, pattern):
@@ -42,7 +43,11 @@ class Files:
                 color_index = 1
             self.candidates.addnstr (y, 0, string, self.xsize, curses.color_pair (color_index))
             y = y + 1
-        self.candidates.refresh (0, 0, 0, 0, self.ysize-2, self.xsize-1)
+        if self.index<self.offset:
+            self.offset = self.index
+        elif self.index>=self.offset+self.ysize-1:
+            self.offset = self.index-(self.ysize-1)+1
+        self.candidates.refresh (self.offset, 0, 0, 0, self.ysize-2, self.xsize-1)
 
     def up (self):
         if self.index>0:
