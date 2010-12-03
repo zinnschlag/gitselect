@@ -4,29 +4,47 @@ import subprocess
 import sys
 import curses
 import curses.textpad
+import string
+
+class Files:
+
+    def __init__ (self, files, screen):
+        self.files = files
+        self.screen = screen
+        self.ysize, self.xsize = screen.getmaxyx()
+        ypad = len (files)
+        if ypad<self.ysize-1:
+            ypad = self.ysize-1
+        self.candidates = curses.newpad (ypad, self.xsize)
+        y = 0
+        for f in files:
+            self.candidates.addnstr (y, 0, f, self.xsize)
+            y = y + 1
+        self.candidates.refresh (0, 0, 0, 0, self.ysize-2, self.xsize-1)
+
+    def filter_ (self, pattern):
+        files = [f for f in self.files if pattern in f]
+        self.candidates.clear()
+        y = 0
+        for f in files:
+            self.candidates.addnstr (y, 0, f, self.xsize)
+            y = y + 1
+        self.candidates.refresh (0, 0, 0, 0, self.ysize-2, self.xsize-1)
 
 def select (screen, files):
+    screen.refresh()
     ysize, xsize = screen.getmaxyx()
-    ypad = len (files)
-    if ypad<ysize-1:
-        ypad = ysize-1
-    candidates = curses.newpad (ypad, xsize)
-    y = 0
-    for f in files:
-        candidates.addnstr (y, 0, f, xsize)
-        y = y + 1
+    candidates = Files (files, screen)
     pattern = curses.newwin (1, xsize, ysize-1, 0)
     text = curses.textpad.Textbox (pattern)
-    screen.refresh()
     pattern.refresh()
-    candidates.refresh (0, 0, 0, 0, ysize-2, xsize-1)
     while True:
         c = screen.getch()
         if c==27: # ESC
             break
         text.do_command (c)
+        candidates.filter_ (string.strip (text.gather()))
         pattern.refresh()
-        candidates.refresh (0, 0, 0, 0, ysize-2, xsize-1)
 
 if __name__ == "__main__":
     p = subprocess.Popen ("git ls-files", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
