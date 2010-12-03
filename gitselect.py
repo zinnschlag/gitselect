@@ -5,6 +5,8 @@ import sys
 import curses
 import curses.textpad
 import string
+import ConfigParser
+import os.path
 
 class Files:
 
@@ -98,11 +100,30 @@ def list_files():
         sys.exit (1)
     return out.splitlines()
 
-def execute (file_):
+def execute (file_, command):
+    command = command.replace ("%", file_)
     if file_ is not None:
-        subprocess.call (["gedit", "--new-window", file_])
+        p = subprocess.Popen (command, shell=True)
+
+CONFIG_PATH = "~/.gitselect"
+
+def read_config():
+    config = ConfigParser.ConfigParser()
+    path = os.path.expanduser (CONFIG_PATH)
+    config.read (path)
+    write = False
+    if not config.has_section ("command"):
+        config.add_section ("command")
+        write = True
+    if not config.has_option ("command", "open"):
+        config.set ("command", "open", "gedit %")
+        write = True
+    if write:
+        config.write (open (path, 'w'))
+    return config.get ("command", "open")
 
 if __name__ == "__main__":
+    command = read_config()
     files = list_files()
     file_ = curses.wrapper (select, files)
-    execute (file_)
+    execute (file_, command)
