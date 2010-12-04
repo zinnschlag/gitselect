@@ -98,7 +98,11 @@ def list_files():
     if len (err)!=0:
         print err
         sys.exit (1)
-    directory = directory.split()[0]
+    out = directory.split()
+    if len (out)==0:
+        directory = '.'
+    else:
+        directory = out[0]
     p = subprocess.Popen ("git ls-files", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         shell=True, cwd=directory)
     out, err = p.communicate()
