@@ -92,18 +92,25 @@ def select (screen, files):
         pattern.refresh()
 
 def list_files():
+    p = subprocess.Popen ("git rev-parse --show-cdup",
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    directory, err = p.communicate()
+    if len (err)!=0:
+        print err
+        sys.exit (1)
+    directory = directory.split()[0]
     p = subprocess.Popen ("git ls-files", stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        shell=True)
+        shell=True, cwd=directory)
     out, err = p.communicate()
     if len (err)!=0:
         print err
         sys.exit (1)
-    return out.splitlines()
+    return (directory, out.splitlines())
 
-def execute (file_, command):
+def execute (file_, command, directory):
     if file_ is not None:
         command = command.replace ("%", file_)
-        p = subprocess.Popen (command, shell=True)
+        p = subprocess.Popen (command, shell=True, cwd=directory)
     else:
         sys.exit (1)
 
@@ -126,6 +133,6 @@ def read_config():
 
 if __name__ == "__main__":
     command = read_config()
-    files = list_files()
+    directory, files = list_files()
     file_ = curses.wrapper (select, files)
-    execute (file_, command)
+    execute (file_, command, directory)
