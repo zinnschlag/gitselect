@@ -1,0 +1,46 @@
+===== ABOUT =====
+
+gitselect is a command line tool, that lets the user quickly select a file from a git
+repository. This file is then used to issue another command (by default opening it in
+gedit).
+
+Note: This tool was motivated by the ALT-G shortcut of the Code::Blocks IDE.
+
+====== COPYRIGHT ======
+
+Copyright 2010 Marc Zinnschlag <marc@zpages.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+====== INSTALLING ======
+
+gitselect can be installed from source using:
+
+./setup.py install
+
+====== USAGE ======
+
+Enter the command gitselect while somewhere in a git repository. This will split the
+console in two parts.
+
+Upper: A list of all versioned files. You can navigte this list with cursor up and
+cursur down. Pressing return will trigger the predefined action and exit gitselect.
+
+Lower: An input field. Any text entered here will be used as a filter for the file list
+in the upper part (only files will be listed, that contain the string in the input field).
+
+====== CONFIGURATION ======
+
+gitselect is configured through a file named .gitselect in the user's home directory. If
+gitselect is run and this file does not exist, it is created (containing default settings).
