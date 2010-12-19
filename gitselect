@@ -68,6 +68,8 @@ class Files:
             self._update (self.pattern)
 
     def get (self):
+        if not self.files:
+            return None
         return self.files[self.index]
 
 
@@ -142,4 +144,5 @@ if __name__ == "__main__":
     command = read_config()
     directory, files = list_files()
     file_ = curses.wrapper (select, files)
-    execute (file_, command, directory)
+    if file_ is not None:
+        execute (file_, command, directory)
