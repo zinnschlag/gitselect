@@ -32,9 +32,11 @@ class Files:
             file_ = self.files[self.index]
         self.files = [f for f in self.all if pattern in f]
         index = [ i for i, f in enumerate (self.files) if f==file_]
-        if len (index)==0:
+        if not index:
             if self.index>=len (self.files):
                 self.index = len (self.files)-1
+                if self.index<0:
+                    self.index = 0
         else:
             self.index = index[0]
         self._update (pattern)
