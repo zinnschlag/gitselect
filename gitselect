@@ -26,7 +26,10 @@ class Files:
         self._update()
 
     def filter_ (self, pattern):
-        file_ = self.files[self.index]
+        if not self.files:
+            file_ = None
+        else:
+            file_ = self.files[self.index]
         self.files = [f for f in self.all if pattern in f]
         index = [ i for i, f in enumerate (self.files) if f==file_]
         if len (index)==0:
